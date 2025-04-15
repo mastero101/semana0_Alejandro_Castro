@@ -1,4 +1,8 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+from fastapi import Request
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
@@ -11,6 +15,13 @@ load_dotenv()
 MODELO = os.getenv("MODELO", "deepseek-r1")
 
 app = FastAPI()
+
+# Configure templates
+templates = Jinja2Templates(directory="app/templates")
+
+@app.get("/", response_class=HTMLResponse)
+async def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 class Pregunta(BaseModel):
     texto: str
